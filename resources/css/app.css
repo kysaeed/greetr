@@ -1,0 +1,108 @@
+/* Carto風モーダルスタイル */
+.modal-carto {
+    background: #fff9e6;
+    border: 2px solid #8b4513;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    position: relative;
+    max-width: 500px;
+    margin: 0 auto;
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+}
+
+.modal-carto::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    right: -10px;
+    bottom: -10px;
+    opacity: 0.1;
+    z-index: -1;
+    border-radius: 20px;
+}
+
+.modal-carto .modal-header {
+    border-bottom: 2px dashed #8b4513;
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+}
+
+.modal-carto .modal-title {
+    font-size: 1.5rem;
+    color: #8b4513;
+    text-align: center;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.modal-carto .modal-body {
+    color: #4a4a4a;
+    line-height: 1.6;
+    font-size: 1.1rem;
+}
+
+.modal-carto .modal-footer {
+    border-top: 2px dashed #8b4513;
+    padding-top: 1rem;
+    margin-top: 1rem;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.modal-carto .btn {
+    background: #8b4513;
+    color: white;
+    border: none;
+    padding: 0.5rem 1.5rem;
+    border-radius: 20px;
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.modal-carto .btn:hover {
+    background: #a0522d;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.modal-carto .btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* モーダルオーバーレイ */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(5px);
+}
+
+/* アニメーション */
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-carto {
+    animation: modalFadeIn 0.3s ease-out;
+}
