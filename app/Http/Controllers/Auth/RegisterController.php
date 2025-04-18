@@ -37,4 +37,12 @@ class RegisterController extends Controller
             'user' => $user
         ], 201);
     }
+
+    /**
+     * 登録後のリダイレクト先
+     */
+    protected function redirectTo(): string
+    {
+        return '/';
+    }
 }

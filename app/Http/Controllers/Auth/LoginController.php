@@ -50,4 +50,12 @@ class LoginController extends Controller
             'message' => 'ログアウトしました'
         ]);
     }
+
+    /**
+     * ログイン後のリダイレクト先
+     */
+    protected function redirectTo(): string
+    {
+        return '/';
+    }
 }
