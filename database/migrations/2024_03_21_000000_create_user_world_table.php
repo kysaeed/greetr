@@ -19,8 +19,8 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
 
-            // ユーザーごとに1つのワールドのみが選択状態になるように制約
-            $table->unique(['user_id', 'is_selected'], 'user_world_selected_unique');
+            // ユーザーとワールドの組み合わせでユニーク
+            $table->unique(['user_id', 'world_id'], 'user_world_unique');
         });
     }
 

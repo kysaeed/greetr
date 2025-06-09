@@ -17,6 +17,7 @@ class World extends Model
      */
     protected $fillable = [
         'name',
+        'description',
         'user_id',
     ];
 
@@ -39,11 +40,19 @@ class World extends Model
     /**
      * このワールドに参加しているユーザー
      */
-    public function participants()
+    public function users()
     {
         return $this->belongsToMany(User::class, 'user_world')
             ->withPivot('is_selected')
             ->withTimestamps();
+    }
+
+    /**
+     * このワールドに参加しているユーザー（エイリアス）
+     */
+    public function participants()
+    {
+        return $this->users();
     }
 
     /**

@@ -45,5 +45,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // ワールドエントリー関連のルート
     Route::post('/world-entry', [WorldEntryController::class, 'store']);
+    Route::get('/world-entry/today', [WorldEntryController::class, 'getTodayEntry']);
     Route::get('/world-entry/weekly-bonus', [WorldEntryController::class, 'weeklyBonus']);
 });

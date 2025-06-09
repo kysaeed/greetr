@@ -23,7 +23,12 @@ class LoginController extends Controller
             ], 422);
         }
 
-        if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
+        $isLoginSuccess = Auth::attempt([
+            'email' => $request->email,
+            'password' => $request->password
+        ], true);
+
+        if ($isLoginSuccess) {
             $request->session()->regenerate();
 
             return response()->json([

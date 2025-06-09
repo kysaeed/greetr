@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
-use App\Http\Controllers\Api\WorldController;
+use App\Http\Controllers\WorldController;
 use App\Http\Controllers\SettingsController;
 
 /*
@@ -28,6 +28,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/world', [WorldController::class, 'store'])->name('world.store');
     Route::delete('/world/{world}', [WorldController::class, 'destroy'])->name('world.destroy');
     Route::post('/world/{world}/select', [WorldController::class, 'select'])->name('world.select');
+    Route::get('/setting', [SettingsController::class, 'index'])->name('setting');
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 });
 

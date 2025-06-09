@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\WorldEntry;
+use App\Models\World;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -16,10 +17,24 @@ class WorldEntryController extends Controller
      */
     public function getTodayEntry()
     {
+        /** @var \App\Models\User $user */
         $user = Auth::user();
         $today = now()->format('Y-m-d');
 
-        $entry = $user->worldEntries()
+        // 選択状態のワールドを取得
+        $selectedWorld = $user->worlds()
+            ->wherePivot('is_selected', true)
+            ->first();
+
+        if (!$selectedWorld) {
+            return response()->json([
+                'success' => false,
+                'message' => '選択状態のワールドがありません'
+            ], 403);
+        }
+
+        $entry = WorldEntry::where('user_id', $user->id)
+            ->where('world_id', $selectedWorld->id)
             ->whereDate('created_at', $today)
             ->first();
 
@@ -32,29 +47,36 @@ class WorldEntryController extends Controller
     public function store(Request $request)
     {
         try {
-            // 今日の日付のエントリーが既に存在するかチェック
-            $todayEntry = $this->getTodayEntry();
-            if ($todayEntry) {
-                return response()->json([
-                    'success' => false,
-                    'message' => '今日はすでにエントリー済みです'
-                ]);
-            }
+            /** @var \App\Models\User $user */
+            $user = Auth::user();
 
             // バリデーション
             $validated = $request->validate([
                 'daily_quests' => 'array',
             ]);
 
-            // ユーザーの選択されたワールドを取得
-            $selectedWorld = auth()->user()->worlds()
+            // 選択状態のワールドを取得
+            $selectedWorld = $user->worlds()
                 ->wherePivot('is_selected', true)
                 ->first();
 
             if (!$selectedWorld) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'ワールドが選択されていません'
+                    'message' => '選択状態のワールドがありません'
+                ], 403);
+            }
+
+            // 今日の日付のエントリーが既に存在するかチェック
+            $todayEntry = WorldEntry::where('user_id', $user->id)
+                ->where('world_id', $selectedWorld->id)
+                ->whereDate('created_at', now()->format('Y-m-d'))
+                ->first();
+
+            if ($todayEntry) {
+                return response()->json([
+                    'success' => false,
+                    'message' => '今日はすでにエントリー済みです'
                 ]);
             }
 
@@ -64,7 +86,8 @@ class WorldEntryController extends Controller
             $reward = ($dayOfWeek >= 1 && $dayOfWeek <= 5) ? $rewards[$dayOfWeek - 1] : 0;
 
             // エントリーを作成
-            $entry = auth()->user()->worldEntries()->create([
+            $entry = WorldEntry::create([
+                'user_id' => $user->id,
                 'world_id' => $selectedWorld->id,
                 'daily_quests' => $validated['daily_quests'] ?? [],
                 'coins_earned' => $reward,
@@ -72,7 +95,7 @@ class WorldEntryController extends Controller
             ]);
 
             // Slackに通知
-            $this->postToSlack(auth()->user(), now(), $dayOfWeek, $reward, $validated['daily_quests'] ?? []);
+            $this->postToSlack($user, now(), $dayOfWeek, $reward, $validated['daily_quests'] ?? []);
 
             return response()->json([
                 'success' => true,
@@ -93,7 +116,7 @@ class WorldEntryController extends Controller
     public function getUserEntries()
     {
         $user = Auth::user();
-        $entries = $user->worldEntries()
+        $entries = WorldEntry::where('user_id', $user->id)
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -130,7 +153,7 @@ class WorldEntryController extends Controller
             $dateStr = $date->format('Y-m-d');
 
             // その日のエントリーが存在するか確認
-            $isLoggedIn = $user->worldEntries()
+            $isLoggedIn = WorldEntry::where('user_id', $user->id)
                 ->whereDate('created_at', $dateStr)
                 ->exists();
 
